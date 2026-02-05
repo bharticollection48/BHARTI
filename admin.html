@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>GHABA | Luxury Admin Panel</title>
+    <style>
+        :root { --gold: #d4af37; --dark: #111; --red: #e74c3c; --gray: #f4f4f4; }
+        body { background: var(--gray); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .admin-box { max-width: 800px; margin: 30px auto; padding: 30px; background: #fff; border-top: 5px solid var(--gold); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 4px; }
+        h2, h3 { font-family: 'Cinzel', serif; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; text-transform: uppercase; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; border-radius: 4px; font-size: 14px; }
+        
+        .dual-input { background: #fafafa; padding: 15px; border-radius: 5px; border: 1px dashed #ccc; margin-bottom: 10px; }
+        .dual-input span { display: block; text-align: center; font-size: 10px; color: #999; margin: 5px 0; font-weight: bold; }
+        
+        .btn-save { background: var(--dark); color: white; width: 100%; padding: 15px; border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; transition: 0.3s; border-radius: 4px; }
+        .btn-save:hover { background: var(--gold); }
+        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .product-list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .product-list-item:hover { background: #f9f9f9; }
+        .product-info { display: flex; align-items: center; }
+        .product-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd; }
+        
+        .btn-delete { background: var(--red); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-delete:hover { background: #c0392b; }
+        
+        #admin-content { display: none; }
+        .loading-overlay { display: none; color: var(--gold); font-weight: bold; margin-top: 15px; text-align: center; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div id="login-box" class="admin-box" style="text-align:center;">
+        <h2>Admin Access</h2>
+        <input type="password" id="admin-pass" placeholder="Enter Password" style="padding:12px; width:80%; margin:20px 0; border:1px solid #ddd; text-align:center;">
+        <br>
+        <button onclick="checkLogin()" style="background:var(--gold); color:white; padding:12px 60px; border:none; cursor:pointer; font-weight:bold; border-radius:4px;">LOGIN</button>
+    </div>
+
+    <div id="admin-content">
+        <div class="admin-box">
+            <h2>Add New Luxury Product</h2>
+            
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="p-name" placeholder="E.g. Royal Golden Necklace">
+            </div>
+
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" id="p-price" placeholder="E.g. 15000">
+            </div>
+
+            <div class="form-group">
+                <label>Select Category</label>
+                <select id="p-category">
+                    <option value="festive">Festive Sale</option>
+                    <option value="model">Model Collection</option>
+                    <option value="necklace">electronic devices</option>
+                    <option value="queen">Gifts for Man Woman</option>
+                    <option value="best-seller">Best Seller</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Product Images</label>
+                <div class="dual-input"><input type="file" accept="image/*" onchange="encodeImageFileAsURL(this, 'img1')"><span>— OR —</span><input type="text" id="img1" placeholder="Paste Image 1 URL"></div>
+                <div class="dual-input"><input type="file" accept="image/*" onchange="encodeImageFileAsURL(this, 'img2')"><span>— OR —</span><input type="text" id="img2" placeholder="Paste Image 2 URL"></div>
+                <div class="dual-input"><input type="file" accept="image/*" onchange="encodeImageFileAsURL(this, 'img3')"><span>— OR —</span><input type="text" id="img3" placeholder="Paste Image 3 URL"></div>
+                <div class="dual-input"><input type="file" accept="image/*" onchange="encodeImageFileAsURL(this, 'img4')"><span>— OR —</span><input type="text" id="img4" placeholder="Paste Image 4 URL"></div>
+            </div>
+
+            <button id="save-btn" onclick="addProduct()" class="btn-save">SAVE TO CLOUD</button>
+            <div id="loader" class="loading-overlay">Cloud par upload ho raha hai... Kripya intezar karein.</div>
+        </div>
+
+        <div class="admin-box">
+            <h3>Manage Products (Live Cloud Data)</h3>
+            <div id="admin-product-list">Cloud se data load ho raha hai...</div>
+        </div>
+    </div>
+
+    <script>
+        const SHEET_URL = "https://script.google.com/macros/s/AKfycbzC1l2Uq_vdAvIL63Y4I7zQbpwG36RvDljet5WTWZcxRKF8UnMsWfwsT60JnSAT6U6qxA/exec"; 
+        const PASS = "ghaba123";
+
+        function checkLogin() {
+            const input = document.getElementById('admin-pass').value;
+            if(input === PASS) {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                loadAdminProducts();
+            } else { 
+                alert("Galat Password! Sahi password dalein."); 
+            }
+        }
+
+        function encodeImageFileAsURL(element, targetId) {
+            let file = element.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onloadend = function() {
+                document.getElementById(targetId).value = reader.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        async function addProduct() {
+            let name = document.getElementById('p-name').value;
+            let price = document.getElementById('p-price').value;
+            let cat = document.getElementById('p-category').value;
+            let btn = document.getElementById('save-btn');
+            let loader = document.getElementById('loader');
+
+            let images = [
+                document.getElementById('img1').value,
+                document.getElementById('img2').value,
+                document.getElementById('img3').value,
+                document.getElementById('img4').value
+            ].filter(link => link.trim() !== "");
+
+            if(!name || !price || images.length === 0) { 
+                alert("Kripya Name, Price aur Image dalein!"); 
+                return; 
+            }
+
+            btn.disabled = true;
+            loader.style.display = "block";
+
+            // YAHAN BADLAV HAI: Seedha JSON bhejna
+            let productData = {
+                action: "add",
+                id: Date.now().toString(), // String mein convert kiya safety ke liye
+                name: name,
+                price: price,
+                cat: cat,
+                img: images // Direct array bhejein
+            };
+
+            try {
+                // Google Script ko JSON format mein data bhejna
+                await fetch(SHEET_URL, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(productData)
+                });
+
+                // Kyunki no-cors hai, humein 2-3 second rukna chahiye refresh se pehle
+                alert("Data Cloud par bhej diya gaya hai!");
+                
+                // Form clear karein
+                document.getElementById('p-name').value = "";
+                document.getElementById('p-price').value = "";
+                document.querySelectorAll('.dual-input input').forEach(i => i.value = "");
+                
+                setTimeout(loadAdminProducts, 2000); // 2 second baad list update karein
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Upload fail ho gaya!");
+            } finally {
+                btn.disabled = false;
+                loader.style.display = "none";
+            }
+        }
+
+        async function deleteProduct(id) {
+            if(!confirm("Kya aap waqayi ise delete karna chahte hain?")) return;
+            
+            let loader = document.getElementById('loader');
+            loader.style.display = "block";
+
+            const params = new URLSearchParams();
+            params.append('action', 'delete');
+            params.append('id', id);
+
+            try {
+                await fetch(SHEET_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params.toString()
+                });
+                alert("Product delete ho gaya!");
+                loadAdminProducts(); 
+            } catch (error) {
+                alert("Delete fail ho gaya!");
+            } finally {
+                loader.style.display = "none";
+            }
+        }
+
+        async function loadAdminProducts() {
+            let list = document.getElementById('admin-product-list');
+            list.innerHTML = "<div style='text-align:center; padding:20px; color:var(--gold);'>Refreshing Cloud List...</div>";
+            
+            try {
+                const response = await fetch(SHEET_URL);
+                const products = await response.json();
+                
+                if(!products || products.length === 0) {
+                    list.innerHTML = "<div style='text-align:center; padding:20px;'>Cloud khali hai. Naya product add karein.</div>";
+                    return;
+                }
+
+                list.innerHTML = products.map(p => {
+                    let images = [];
+                    try {
+                        images = Array.isArray(p.img) ? p.img : JSON.parse(p.img || "[]");
+                    } catch(e) { images = [p.img]; }
+
+                    let mainImg = images[0] || 'https://via.placeholder.com/60';
+                    
+                    return `
+                    <div class="product-list-item">
+                        <div class="product-info">
+                            <img src="${mainImg}" onerror="this.src='https://via.placeholder.com/60'">
+                            <span>
+                                <b style="color:var(--dark);">${p.name}</b><br>
+                                <small style="color:var(--gold); font-weight:bold;">${p.cat.toUpperCase()}</small> | 
+                                <small>₹${p.price}</small>
+                            </span>
+                        </div>
+                        <button class="btn-delete" onclick="deleteProduct('${p.id}')">DELETE</button>
+                    </div>`;
+                }).reverse().join('');
+
+            } catch (error) {
+                list.innerHTML = "<div style='color:red; text-align:center; padding:20px;'>Data load nahi ho raha. Check karein ki Script 'Anyone' par deploy hai ya nahi.</div>";
+            }
+        }
+    </script>
+</body>
+</html>

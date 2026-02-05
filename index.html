@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>GHABA | Luxury Jewelry Boutique</title>
+    <meta name="description" content="Experience the pinnacle of luxury with GHABA. Authentic jewelry, apparel, and premium collections.">
+
+    <link rel="icon" type="image/png" href="https://cdn.dribbble.com/userupload/17039932/file/original-983633d1f6de58f5d871f174ff34f057.jpg?resize=400x0">
+    <link rel="apple-touch-icon" href="https://cdn.dribbble.com/userupload/17039932/file/original-983633d1f6de58f5d871f174ff34f057.jpg?resize=400x0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-announcement">
+        ESTABLISHED 2026 — EXCLUSIVE GOLD & DIAMOND COLLECTION
+    </div>
+
+    <nav class="luxury-nav">
+        <div class="brand-logo">GHABA</div>
+        <div class="nav-links">
+            <a href="#collections">COLLECTIONS</a>
+            <a href="#experience">THE EXPERIENCE</a>
+            <a href="https://wa.me/919876543210" target="_blank">WHATSAPP</a>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <div class="hero-box">
+            <span class="tagline">FINEST CRAFTSMANSHIP</span>
+            <h1>QUEENLING IT</h1>
+            <p>Epitomizing the modern values of class, freedom and feminine elegance.</p>
+            <div class="gold-divider"></div>
+        </div>
+    </header>
+
+    <section class="main-container" id="collections">
+        <div class="jewelry-grid">
+            
+            <a href="festive-sale.html" class="j-card festive-img">
+                <div class="j-overlay">
+                    <h2>Festive Sale</h2>
+                    <div class="j-footer yellow-tag">Festive sale <span>→</span></div>
+                </div>
+            </a>
+
+            <a href="model-collection.html" class="j-card model-img">
+                <div class="j-overlay">
+                    <h2>Model Collection</h2>
+                    <div class="j-footer yellow-tag">New Arrivals <span>→</span></div>
+                </div>
+            </a>
+
+            <a href="queenling.html" class="j-card best-img full-row">
+                <div class="j-overlay">
+                    <h2>Gifts for Man Woman</h2>
+                    <div class="j-footer green-tag">All Gifts <span>→</span></div>
+                </div>
+            </a>
+
+            <a href="necklaces.html" class="j-card necklace-img full-row">
+                <div class="j-overlay">
+                    <h2>electronics, electronic devices, consumer electronics, products</h2>
+                    <div class="j-footer yellow-tag">Explore All <span>→</span></div>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <section class="experience-section" id="experience">
+        <div class="experience-content">
+            <span class="sub-head">A PRIVATE AFFAIR</span>
+            <h2>The Royal Consultation</h2>
+            <p>"Exclusively curated for you, a moment of pure luxury. Connect with our experts and experience a personalized showcase from the comfort of your home."</p>
+            <div class="luxury-actions">
+                <a href="https://wa.me/919876543210" class="btn-gold">CHAT ON WHATSAPP</a>
+                <a href="mailto:info@ghaba.com" class="btn-outline">SEND AN EMAIL</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="luxury-footer">
+        <div class="footer-wrap">
+            <p>© 2026 GHABA : Queenling It. All Rights Reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/919876543210" class="float-wa" target="_blank">
+        <span>Connect Now</span> 💬
+    </a>
+
+
+    <div id="web-display" class="product-grid"></div>
+
+<script>
+    function displayWebProducts() {
+        let container = document.getElementById('web-display');
+        let pageCat = document.body.dataset.page; // Page ki category leta hai
+        let allProducts = JSON.parse(localStorage.getItem('ghaba_items')) || [];
+
+        // Sirf wahi products dikhao jo is page ki category ke hain
+        let filtered = allProducts.filter(p => p.cat === pageCat);
+
+        if(filtered.length === 0) {
+            container.innerHTML = "<p style='text-align:center; width:100%;'>Abhi koi product nahi hai.</p>";
+            return;
+        }
+
+        container.innerHTML = filtered.map(p => `
+            <div class="product-card">
+                <img src="${p.img}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p class="price"><span>₹${p.price}</span></p>
+                <button class="buy-btn">Order on WhatsApp</button>
+            </div>
+        `).join('');
+    }
+    displayWebProducts();
+</script>
+
+</body>
+</html>
