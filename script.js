@@ -58,14 +58,15 @@ async function loadGhabaProducts() {
             const productLocation = `${cleanUrl}#prod-${item.id}`;
 
             // --- WHATSAPP MESSAGE FORMATTING ---
-            const message = `*NAYA ORDER - GHABA LUXURY*\n\n` +
+            const message = `*NEW ORDER - GHABA LUXURY*\n\n` +
+                            `Greetings GHABA! I am interested in this piece:\n\n` +
                             `*Product:* ${item.name}\n` +
                             `*Price:* ₹${item.price}\n\n` +
-                            `*Photo Link:* ${firstImgForWA}\n` +
-                            `*View on Website:* ${productLocation}`;
+                            `📸 *Product Photo:* ${firstImgForWA}\n\n` + 
+                            `📍 *Direct Location:* ${productLocation}\n\n` +
+                            `Please share the availability and shipping details.`;
 
             const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
-
             // Images HTML
             let imageHTML = images.map((src, imgIndex) => 
                 `<img src="${src}" 
