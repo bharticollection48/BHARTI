@@ -1,0 +1,182 @@
+/* Google Fonts Integration */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.checkout-container {
+    max-width: 450px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    position: relative;
+}
+
+/* Header Product Section */
+.product-preview {
+    text-align: center;
+    padding: 35px 25px;
+    background: #fafafa;
+    position: relative;
+}
+
+.product-preview img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    border-radius: 20px;
+    transition: all 0.5s ease;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.1));
+}
+
+.product-preview:hover img {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.product-name {
+    margin: 25px 0 10px 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    letter-spacing: 1.5px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+}
+
+.product-price {
+    font-size: 1.6rem;
+    color: #b8860b;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.free-delivery-tag {
+    font-size: 10px;
+    background: #d4af37;
+    color: white;
+    padding: 3px 12px;
+    border-radius: 50px;
+    display: inline-block;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+/* Form Styling */
+.form-area {
+    padding: 40px 30px;
+}
+
+h2 {
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #d4af37;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.input-group {
+    margin-bottom: 22px;
+    position: relative;
+}
+
+label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    padding-left: 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 15px 18px;
+    border: 1.5px solid #f0f0f0;
+    border-radius: 15px;
+    font-size: 14px;
+    color: #333;
+    background: #fcfcfc;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #d4af37;
+    background: #fff;
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Layout Grid for City/Pin */
+.row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 15px;
+}
+
+/* Elegant WhatsApp Button */
+.submit-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 18px;
+    margin-top: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.submit-btn:hover {
+    background: #d4af37;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+}
+
+.submit-btn svg {
+    fill: currentColor;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.checkout-container {
+    animation: fadeIn 0.8s ease-out;
+}

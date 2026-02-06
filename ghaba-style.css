@@ -1,4 +1,4 @@
-/* --- GHABA LUXURY THEME (Updated for Slideshow) --- */
+/* --- GHABA LUXURY THEME (Full Optimized Code) --- */
 :root {
     --gold: #D4AF37;
     --dark: #111d12;
@@ -37,9 +37,9 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
     display: block;
 }
 
-/* Slideshow Image Styling */
+/* Slideshow Image Styling - Fade Effect Optimized */
 .item-img-box img { 
-    position: absolute; /* Ek ke upar ek images */
+    position: absolute; /* Ek ke upar ek images overlay karne ke liye */
     top: 0;
     left: 0;
     width: 100%; 
@@ -47,29 +47,20 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
     object-fit: cover; /* Photo stretch nahi hogi */
     object-position: center; 
     opacity: 0; /* Default: Chupi rahengi */
-    transition: opacity 1s ease-in-out, transform 0.5s ease; /* Fade effect */
+    z-index: 1;
+    /* transition: 1s set kiya hai smoothness ke liye */
+    transition: opacity 1s ease-in-out, transform 0.5s ease !important; 
 }
 
-/* Pehli image hamesha dikhegi */
-/* Ye line zaroori hai photo dikhane ke liye */
+/* Jo image active ho wo dikhegi */
 .item-img-box img.active {
     opacity: 1 !important;
-    position: relative; /* Pehli image space legi taaki card khali na dikhe */
-}
-
-.item-img-box img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0; /* Default me sab chupi rahengi */
-    transition: opacity 0.8s ease-in-out;
+    z-index: 2;
+    position: relative; /* Card ki height maintain karne ke liye */
 }
 
 /* Hover effect on images */
-.item-card:hover .item-img-box img { transform: scale(1.05); }
+.item-card:hover .item-img-box img.active { transform: scale(1.05); }
 
 .item-details { padding: 20px 15px; }
 .item-details h3 { font-family: 'Cinzel', serif; font-size: 18px; margin-bottom: 10px; color: var(--dark); }
@@ -83,7 +74,7 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
     color: #fff; 
     padding: 16px; 
     text-decoration: none; 
-    font-size: 11px; /* Sophisticated small caps */
+    font-size: 11px; 
     font-weight: 600; 
     text-transform: uppercase;
     letter-spacing: 3px; 
@@ -95,7 +86,7 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
     text-align: center;
 }
 
-/* Shine Animation - Button ke upar ek chamak jayegi */
+/* Shine Animation */
 .wa-order-link::after {
     content: '';
     position: absolute;
@@ -116,26 +107,31 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
     transform: translateY(-3px);
 }
 
-/* Hover par chamak move hogi */
 .wa-order-link:hover::after {
     left: 120%;
 }
 
-/* Mobile par touch feedback */
 .wa-order-link:active {
     transform: scale(0.98);
 }
-.wa-order-link:hover { background: #128C7E; box-shadow: 0 5px 15px rgba(7,94,84,0.3); }
 
 /* Same Footer */
 .ghaba-footer { padding: 60px 20px; text-align: center; background: #fafafa; border-top: 1px solid #eee; margin-top: 80px; }
 .ghaba-footer p { font-size: 11px; color: #888; letter-spacing: 2px; }
 
-/* Responsive Fix */
+/* Responsive Fix - UPDATED FOR 2 PRODUCTS IN 1 LINE */
 @media (max-width: 768px) { 
     .logo-text { font-size: 32px; } 
-    .item-img-box { height: 320px; } 
+    .ghaba-grid { 
+        grid-template-columns: repeat(2, 1fr); /* Phone par ek line me 2 product */
+        gap: 15px; /* Thoda gap kam kiya mobile ke liye */
+        padding: 0 10px;
+    }
+    .item-img-box { height: 250px; } /* Image height adjust ki mobile ke liye */
     .nav-menu a { margin: 0 10px; font-size: 10px; } 
+    .item-details h3 { font-size: 14px; }
+    .item-price { font-size: 16px; }
+    .wa-order-link { padding: 10px; font-size: 9px; letter-spacing: 1px; }
 }
 
 /* Slider Dots Style */
@@ -161,16 +157,6 @@ body { font-family: 'Montserrat', sans-serif; background: var(--white); color: #
 
 .dot.active {
     background: var(--gold);
-    width: 20px; /* Thoda lamba dikhega active hone par */
+    width: 20px; 
     border-radius: 10px;
-}
-
-/* Ensure images fade nicely */
-.item-img-box img {
-    opacity: 0;
-    transition: opacity 0.6s ease-in-out !important;
-}
-
-.item-img-box img.active {
-    opacity: 1 !important;
 }

@@ -50,28 +50,29 @@ async function loadGhabaProducts() {
             }
             
             images = images.filter(src => src && src.trim() !== "");
-            const firstImgForWA = images[0] || ""; // WhatsApp preview ke liye pehli photo
+            const firstImgForCheckout = images[0] || ""; 
 
             // --- LOCATION SETTING ---
-            // Isse link banega: website.com/page#prod-12345
-            const cleanUrl = window.location.href.split('#')[0];
+            const cleanUrl = window.location.origin + window.location.pathname;
             const productLocation = `${cleanUrl}#prod-${item.id}`;
 
-            // --- WHATSAPP MESSAGE FORMATTING ---
-            const message = `*NEW ORDER - GHABA LUXURY*\n\n` +
-                            `Greetings GHABA! I am interested in this piece:\n\n` +
-                            `*Product:* ${item.name}\n` +
-                            `*Price:* ₹${item.price}\n\n` +
-                            `📸 *Product Photo:* ${firstImgForWA}\n\n` + 
-                            `📍 *Direct Location:* ${productLocation}\n\n` +
-                            `Please share the availability and shipping details.`;
+            // --- DATA STORAGE LOGIC (Fixed with Base64 for 100% Success) ---
+            const orderObj = {
+                name: item.name,
+                price: item.price,
+                img: firstImgForCheckout,
+                loc: productLocation
+            };
 
-            const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+            // Encoding to Base64 to prevent any HTML/Quote breakage
+            const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(orderObj))));
+
             // Images HTML
             let imageHTML = images.map((src, imgIndex) => 
                 `<img src="${src}" 
                       class="p-img ${imgIndex === 0 ? 'active' : ''}" 
                       data-idx="${imgIndex}" 
+                      onmouseover="manualSlide(this, ${imgIndex})"
                       loading="lazy"
                       decoding="async"
                       onerror="this.src='https://via.placeholder.com/400x500?text=Image+Not+Found'">`
@@ -84,9 +85,13 @@ async function loadGhabaProducts() {
                     `<span class="dot ${dotIndex === 0 ? 'active' : ''}" onclick="manualSlide(this, ${dotIndex})"></span>`
                 ).join('') + `</div>` : '';
 
-            // ID yahan add kiya gaya hai (id="prod-${item.id}")
+            // Card HTML
             return `
-                <div class="item-card" id="prod-${item.id}" data-current="0" data-total="${images.length}" style="scroll-margin-top: 120px;">
+                <div class="item-card" id="prod-${item.id}" 
+                      data-current="0" 
+                      data-total="${images.length}" 
+                      onwheel="handleScrollSlide(event, this)"
+                      style="scroll-margin-top: 120px;">
                     <div class="item-img-box">
                         ${imageHTML}
                         ${dotsHTML}
@@ -94,15 +99,16 @@ async function loadGhabaProducts() {
                     <div class="item-details">
                         <h3 style="text-transform: uppercase; letter-spacing:1.5px; margin: 10px 0;">${item.name}</h3>
                         <div class="item-price">₹${Number(item.price).toLocaleString('en-IN')}</div>
-                        <a href="${whatsappUrl}" class="wa-order-link" target="_blank">
-                            ORDER ON WHATSAPP 💬
-                        </a>
+                        <button onclick="goToCheckout('${base64Data}')" class="wa-order-link" style="width:100%; border:none; cursor:pointer; display:block; text-align:center; text-decoration:none;">
+                            BUY NOW / ORDER NOW 🛒
+                        </button>
                     </div>
                 </div>
             `;
         }).reverse().join('');
 
-        initAutoSlider();
+        initAutoSlider(); 
+        handleHashScroll();
 
     } catch (error) {
         console.error("Cloud error:", error);
@@ -110,33 +116,85 @@ async function loadGhabaProducts() {
     }
 }
 
+// --- WHEEL SCROLL LOGIC ---
+function handleScrollSlide(event, card) {
+    if (Math.abs(event.deltaY) > 30) { 
+        event.preventDefault(); 
+        const current = parseInt(card.getAttribute('data-current') || 0);
+        const total = parseInt(card.getAttribute('data-total') || 0);
+        if (total <= 1) return;
+
+        let next;
+        if (event.deltaY > 0) {
+            next = (current + 1) % total;
+        } else {
+            next = (current - 1 + total) % total;
+        }
+        changeSlide(card, next);
+    }
+}
+
+// --- HASH SCROLL LOGIC ---
+function handleHashScroll() {
+    if (window.location.hash) {
+        setTimeout(() => {
+            const element = document.querySelector(window.location.hash);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 800);
+    }
+}
+
+// --- REDIRECTION FUNCTION (Updated for Base64) ---
+function goToCheckout(base64Data) {
+    try {
+        const decodedData = decodeURIComponent(escape(atob(base64Data)));
+        localStorage.setItem('ghaba_order', decodedData);
+        window.location.href = 'checkout.html';
+    } catch (e) {
+        console.error("Encoding error:", e);
+        alert("Pramaanikikaran mein truti (Error in processing). Kripya dobara koshish karein.");
+    }
+}
+
 // --- SLIDER LOGIC ---
-function manualSlide(dotElement, targetIdx) {
-    const card = dotElement.closest('.item-card');
-    changeSlide(card, targetIdx);
+function manualSlide(element, targetIdx) {
+    const card = element.closest('.item-card');
+    clearTimeout(window.hoverTimer);
+    window.hoverTimer = setTimeout(() => {
+        changeSlide(card, targetIdx);
+    }, 300); 
 }
 
 function changeSlide(card, targetIdx) {
     const imgs = card.querySelectorAll('.p-img');
     const dots = card.querySelectorAll('.dot');
     if(!imgs[targetIdx]) return;
+    if(imgs[targetIdx].classList.contains('active')) return;
+
     imgs.forEach(img => img.classList.remove('active'));
     dots.forEach(dot => dot.classList.remove('active'));
+    
     imgs[targetIdx].classList.add('active');
     if(dots[targetIdx]) dots[targetIdx].classList.add('active');
+    
     card.setAttribute('data-current', targetIdx);
 }
 
+// --- AUTO SLIDER ---
 function initAutoSlider() {
     if (window.ghabaSlider) clearInterval(window.ghabaSlider);
     window.ghabaSlider = setInterval(() => {
         const allCards = document.querySelectorAll('.item-card');
         allCards.forEach(card => {
-            const current = parseInt(card.getAttribute('data-current') || 0);
-            const total = parseInt(card.getAttribute('data-total') || 0);
-            if (total > 1) {
-                const next = (current + 1) % total;
-                changeSlide(card, next);
+            if (!card.matches(':hover')) {
+                const current = parseInt(card.getAttribute('data-current') || 0);
+                const total = parseInt(card.getAttribute('data-total') || 0);
+                if (total > 1) {
+                    const next = (current + 1) % total;
+                    changeSlide(card, next);
+                }
             }
         });
     }, 4500); 
